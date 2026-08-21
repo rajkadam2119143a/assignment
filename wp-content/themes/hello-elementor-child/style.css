@@ -1,0 +1,844 @@
+/*
+	Theme Name: Hello Elementor Child
+	Theme URI: https://lendenclub.com
+	Description: Child theme of Hello Elementor for the LenDenClub homepage prototype. All page layout/content is managed through Elementor; this theme only carries small accessibility and polish CSS that Elementor's UI doesn't expose directly.
+	Author: LenDenClub
+	Template: hello-elementor
+	Version: 1.0.0
+	Text Domain: hello-elementor-child
+*/
+
+/* Visible keyboard focus states (accessibility) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.elementor-button:focus-visible {
+	outline: 2px solid #14467D;
+	outline-offset: 2px;
+}
+
+/* Smooth in-page scrolling for anchor nav (How It Works, Products, FAQ, etc.) */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Offset anchor targets so the sticky header doesn't cover the section heading */
+section[id] {
+	scroll-margin-top: 90px;
+}
+
+/* Sticky header gains a soft shadow once the page has scrolled (see ldc-scroll-shadow.js) */
+body header {
+	transition: box-shadow .2s ease;
+}
+body.ldc-scrolled header {
+	box-shadow: 0 2px 16px rgba(10, 37, 64, 0.08);
+}
+
+/* Card hover lift (trust stats, product cards, why-lendenclub cards) */
+.ldc-hover-card {
+	transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.ldc-hover-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 28px rgba(10, 37, 64, 0.1);
+	border-color: rgba(20, 70, 125, 0.25) !important;
+}
+
+/* Buttons: subtle lift + shadow on hover */
+.elementor-button {
+	transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease, color .2s ease !important;
+}
+.elementor-button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(20, 70, 125, 0.18);
+}
+
+/* FAQ accordion: card-style items with breathing room between them */
+.elementor-accordion .elementor-accordion-item {
+	border: 1px solid #E2E6EC !important;
+	border-radius: 10px !important;
+	margin-bottom: 12px;
+	overflow: hidden;
+}
+.elementor-accordion .elementor-accordion-item:last-child {
+	margin-bottom: 0;
+}
+.elementor-accordion .elementor-tab-title {
+	padding: 18px 20px !important;
+}
+.elementor-accordion .elementor-tab-content {
+	padding: 0 20px 20px !important;
+}
+
+/* Nav + footer link hover */
+nav a:hover {
+	color: #14467D !important;
+}
+
+/* Lead form: placeholder-only styling for text-style fields (label hidden, the
+   placeholder text carries the same wording) — the acceptance checkbox keeps its
+   full label text, since a checkbox has no placeholder equivalent to fall back on.
+   NOTE: "#lead-form" is not a real HTML id — Elementor exposes this element only as
+   the class below, so that's what has to be targeted. */
+.elementor-element-lead-form .elementor-field-type-text > label,
+.elementor-element-lead-form .elementor-field-type-tel > label,
+.elementor-element-lead-form .elementor-field-type-email > label,
+.elementor-element-lead-form .elementor-field-type-select > label {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+/* Elementor renders the acceptance field as: <label>text</label> then, in a
+   SEPARATE block below it, <div class="elementor-field-subgroup"><input>. That's
+   the label-above-checkbox stack in the screenshot. Flexing the two blocks as a
+   row and using `order` puts the checkbox first (left) and text second (right)
+   without touching the underlying DOM/for-attribute association. */
+.elementor-element-lead-form .elementor-field-type-acceptance {
+	display: flex !important;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 10px;
+}
+.elementor-element-lead-form .elementor-field-type-acceptance .elementor-field-label {
+	order: 2;
+	flex: 1 1 auto;
+	/* margin: 0 !important; */
+	margin: -34px 0px 0px 22px !important;
+}
+.elementor-element-lead-form .elementor-field-type-acceptance .elementor-field-subgroup {
+	order: 1;
+	margin: 2px 0 0 !important;
+}
+.elementor-element-lead-form .elementor-field-type-acceptance,
+.elementor-element-lead-form .elementor-field-type-acceptance label,
+.elementor-element-lead-form .elementor-field-type-acceptance span {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+	font-size: 13.5px;
+	line-height: 1.5;
+	color: #5B6472 !important;
+}
+
+/* Lead form: modern input styling (the parent theme's reset.css otherwise leaves
+   these looking like unstyled default browser inputs) */
+.elementor-element-lead-form .elementor-field {
+	border: 1.5px solid #E2E6EC !important;
+	border-radius: 8px !important;
+	padding: 12px 14px !important;
+	font-size: 15px;
+	transition: border-color .15s ease, box-shadow .15s ease;
+	background: #FFFFFF;
+}
+.elementor-element-lead-form .elementor-field:focus {
+	border-color: #14467D !important;
+	box-shadow: 0 0 0 3px rgba(20, 70, 125, 0.12);
+	outline: none;
+}
+.elementor-element-lead-form .elementor-field-group {
+	margin-bottom: 18px !important;
+}
+.elementor-element-lead-form .elementor-field-type-acceptance input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	margin-right: 8px;
+	accent-color: #1E8E5A;
+}
+
+/* Custom-styled dropdown (see ldc-frontend.js: enhanceSelects()). Native <select>
+   option lists can't be restyled with CSS alone in any browser, so the "I'm
+   interested in" field is progressively enhanced into this component — the real
+   <select> stays in the DOM (visually hidden) and still carries the form value. */
+.ldc-select {
+	position: relative;
+	/* Elementor's field-group wrapper is a flex row; without an explicit width a
+	   plain sibling div sizes to its own content instead of matching the other
+	   (100%-width) fields, which is why the dropdown was rendering undersized. */
+	width: 100%;
+	flex: 1 1 100%;
+}
+/* Hides Elementor's entire original select field — the <select> AND its separate
+   decorative-arrow sibling together — once JS has built the custom dropdown below. */
+.ldc-select-native-host {
+	position: absolute !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
+	width: 1px !important;
+	height: 1px !important;
+	min-height: 0 !important;
+	overflow: hidden !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+.ldc-select-trigger {
+	width: 100% !important;
+	display: flex !important;
+	align-items: center;
+	justify-content: space-between;
+	text-align: left;
+	background: #FFFFFF !important;
+	border: 1.5px solid #E2E6EC !important;
+	border-radius: 8px !important;
+	padding: 12px 14px !important;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-size: 15px;
+	color: #1A1A1A !important;
+	cursor: pointer;
+}
+.ldc-select-trigger:hover {
+	border-color: #C9D2DC !important;
+}
+.ldc-select.is-open .ldc-select-trigger,
+.ldc-select-trigger:focus {
+	border-color: #14467D !important;
+	box-shadow: 0 0 0 3px rgba(20, 70, 125, 0.12);
+	outline: none;
+}
+.ldc-select-chevron {
+	width: 9px;
+	height: 9px;
+	border-right: 2px solid #5B6472;
+	border-bottom: 2px solid #5B6472;
+	transform: rotate(45deg);
+	transition: transform .15s ease;
+	flex-shrink: 0;
+	margin-left: 10px;
+}
+.ldc-select.is-open .ldc-select-chevron {
+	transform: rotate(225deg);
+	margin-top: 6px;
+}
+.ldc-select-list {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	z-index: 60;
+	background: #FFFFFF;
+	border: 1px solid #E2E6EC;
+	border-radius: 10px;
+	box-shadow: 0 12px 28px rgba(10, 37, 64, 0.14);
+	list-style: none;
+	margin: 0;
+	padding: 6px;
+	max-height: 240px;
+	overflow-y: auto;
+}
+.ldc-select-list li {
+	padding: 10px 12px;
+	border-radius: 6px;
+	cursor: pointer;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-size: 14.5px;
+	color: #1A1A1A;
+}
+.ldc-select-list li:hover,
+.ldc-select-list li.is-active {
+	background: #F5F7FA;
+}
+.ldc-select-list li.is-selected {
+	background: #14467D;
+	color: #FFFFFF;
+	font-weight: 600;
+}
+
+/* =========================================================
+ * BLOG ARTICLE TEMPLATE
+ * ========================================================= */
+
+/* Breadcrumb */
+.ldc-breadcrumb ol {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 13.5px;
+	color: #5B6472;
+}
+.ldc-breadcrumb li:not(:last-child)::after {
+	content: "/";
+	margin-left: 6px;
+	color: #C9D2DC;
+}
+.ldc-breadcrumb a {
+	color: #5B6472;
+	text-decoration: none;
+}
+.ldc-breadcrumb a:hover {
+	color: #14467D;
+	text-decoration: underline;
+}
+.ldc-breadcrumb li[aria-current="page"] {
+	color: #1A1A1A;
+	font-weight: 500;
+}
+
+/* Article body typography & hierarchy */
+.ldc-article-body {
+	font-size: 17px;
+	line-height: 1.75;
+	color: #1A1A1A;
+}
+.ldc-article-body h2 {
+	font-size: 28px;
+	font-weight: 800;
+	margin-top: 48px;
+	margin-bottom: 16px;
+	scroll-margin-top: 100px;
+}
+.ldc-article-body h3 {
+	font-size: 21px;
+	font-weight: 700;
+	margin-top: 32px;
+	margin-bottom: 12px;
+	scroll-margin-top: 100px;
+}
+.ldc-article-body p {
+	margin-bottom: 20px;
+}
+.ldc-article-body ul,
+.ldc-article-body ol {
+	margin-bottom: 20px;
+	padding-left: 24px;
+}
+.ldc-article-body li {
+	margin-bottom: 8px;
+}
+.ldc-article-body a {
+	color: #14467D;
+	text-decoration: underline;
+	text-decoration-color: rgba(20,70,125,0.3);
+}
+.ldc-article-body a:hover {
+	text-decoration-color: #14467D;
+}
+.ldc-article-body strong {
+	font-weight: 700;
+}
+.ldc-article-body table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 24px;
+	font-size: 15px;
+}
+.ldc-article-body table th,
+.ldc-article-body table td {
+	border: 1px solid #E2E6EC;
+	padding: 10px 14px;
+	text-align: left;
+}
+.ldc-article-body table th {
+	background: #F5F7FA;
+	font-weight: 700;
+}
+
+/* Table of contents */
+.ldc-toc {
+	background: #F5F7FA;
+	border: 1px solid #E2E6EC;
+	border-radius: 12px;
+	padding: 20px;
+	position: sticky;
+	top: 100px;
+}
+/* !important throughout: the parent theme's reset.css styles every bare <button>
+   (including a colored border and a background/color flip on :hover/:focus), so
+   these overrides need to win in every state, not just the resting one. */
+.ldc-toc-toggle,
+.ldc-toc-toggle:hover,
+.ldc-toc-toggle:focus {
+	display: flex !important;
+	width: 100% !important;
+	justify-content: space-between;
+	align-items: center;
+	background: none !important;
+	border: none !important;
+	font-family: 'Manrope', sans-serif;
+	font-weight: 700;
+	font-size: 15px;
+	color: #1A1A1A !important;
+	cursor: pointer;
+	padding: 0 !important;
+}
+.ldc-toc-list {
+	list-style: none;
+	margin: 14px 0 0;
+	padding: 0;
+}
+.ldc-toc-list li {
+	margin-bottom: 8px;
+}
+.ldc-toc-list li.ldc-toc-sub {
+	margin-left: 16px;
+}
+.ldc-toc-list a {
+	color: #5B6472;
+	text-decoration: none;
+	font-size: 14.5px;
+	display: block;
+	padding: 4px 0;
+	border-left: 2px solid transparent;
+	padding-left: 10px;
+}
+.ldc-toc-list a:hover,
+.ldc-toc-list a.is-active {
+	color: #14467D;
+	border-left-color: #14467D;
+	font-weight: 600;
+}
+
+/* In-content CTA */
+.ldc-incontent-cta {
+	background: #0A2540;
+	border-radius: 16px;
+	padding: 36px;
+	margin: 40px 0;
+	text-align: center;
+}
+.ldc-incontent-cta h3 {
+	color: #FFFFFF;
+	font-size: 22px;
+	margin: 0 0 8px;
+}
+.ldc-incontent-cta p {
+	color: #C9D6E5;
+	margin: 0 0 20px;
+}
+.ldc-cta-btn {
+	display: inline-block;
+	background: #1E8E5A;
+	color: #FFFFFF !important;
+	font-weight: 600;
+	text-decoration: none !important;
+	padding: 13px 28px;
+	border-radius: 8px;
+	transition: transform .15s ease, box-shadow .15s ease;
+}
+.ldc-cta-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(30,142,90,0.3);
+}
+
+/* FAQ accordion (shortcode-based) */
+.ldc-faq-item {
+	border: 1px solid #E2E6EC;
+	border-radius: 10px;
+	margin-bottom: 12px;
+	overflow: hidden;
+}
+.ldc-faq-question,
+.ldc-faq-question:hover,
+.ldc-faq-question:focus {
+	width: 100% !important;
+	display: flex !important;
+	justify-content: space-between;
+	align-items: center;
+	background: #FFFFFF !important;
+	border: none !important;
+	text-align: left;
+	font-family: 'Manrope', sans-serif;
+	font-weight: 700;
+	font-size: 16px;
+	color: #1A1A1A !important;
+	padding: 18px 20px !important;
+	cursor: pointer;
+}
+.ldc-faq-question:focus-visible {
+	outline: 2px solid #14467D;
+	outline-offset: -2px;
+}
+.ldc-faq-question:hover {
+	background: #F5F7FA !important;
+}
+.ldc-faq-icon {
+	color: #1E8E5A;
+	font-size: 20px;
+	flex-shrink: 0;
+	margin-left: 16px;
+}
+.ldc-faq-answer {
+	padding: 0 20px 20px;
+	color: #5B6472;
+	line-height: 1.7;
+}
+
+/* Author box */
+.ldc-author-box {
+	display: flex;
+	gap: 20px;
+	background: #F5F7FA;
+	border: 1px solid #E2E6EC;
+	border-radius: 16px;
+	padding: 28px;
+	margin: 48px 0;
+	align-items: flex-start;
+}
+.ldc-author-avatar img {
+	border-radius: 50%;
+	display: block;
+}
+.ldc-author-label {
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+	color: #1E8E5A;
+	margin: 0 0 4px;
+}
+.ldc-author-name {
+	font-size: 19px;
+	margin: 0 0 8px;
+	color: #1A1A1A;
+}
+.ldc-author-bio {
+	color: #5B6472;
+	margin: 0 0 10px;
+	line-height: 1.6;
+}
+.ldc-author-link {
+	color: #14467D;
+	font-weight: 600;
+	text-decoration: none;
+	font-size: 14px;
+}
+
+/* Related articles */
+.ldc-related-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	margin: 24px 0 48px;
+}
+.ldc-related-card {
+	display: block;
+	border: 1px solid #E2E6EC;
+	border-radius: 12px;
+	overflow: hidden;
+	text-decoration: none;
+	transition: transform .18s ease, box-shadow .18s ease;
+	background: #FFFFFF;
+}
+.ldc-related-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 28px rgba(10,37,64,0.1);
+}
+.ldc-related-thumb {
+	height: 140px;
+	background: linear-gradient(135deg, #14467D, #0A2540);
+}
+.ldc-related-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.ldc-related-body {
+	padding: 18px 20px;
+}
+.ldc-related-body h3 {
+	font-size: 16px;
+	color: #1A1A1A;
+	margin: 0 0 10px;
+	line-height: 1.4;
+}
+.ldc-related-cta {
+	color: #1E8E5A;
+	font-weight: 600;
+	font-size: 14px;
+}
+
+/* Sticky CTA bar */
+.ldc-sticky-cta {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 400;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	background: #FFFFFF;
+	border-top: 1px solid #E2E6EC;
+	padding: 14px 24px;
+	box-shadow: 0 -4px 16px rgba(10,37,64,0.08);
+	transform: translateY(100%);
+	transition: transform .25s ease;
+}
+.ldc-sticky-cta.is-visible {
+	transform: translateY(0);
+}
+.ldc-sticky-cta-text {
+	font-weight: 600;
+	color: #1A1A1A;
+}
+
+/* =========================================================
+ * SITE HEADER / FOOTER (plain-PHP templates used on blog pages,
+ * mirrors the Elementor-built homepage header/footer visually)
+ * ========================================================= */
+body { margin: 0; }
+.ldc-header {
+	position: sticky;
+	top: 0;
+	z-index: 500;
+	background: #FFFFFF;
+	border-bottom: 1px solid #E2E6EC;
+}
+.ldc-header-inner {
+	max-width: 1240px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 48px;
+	gap: 24px;
+}
+.ldc-logo {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	text-decoration: none;
+	color: #14467D;
+}
+.ldc-logo-mark {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: #14467D;
+	color: #FFFFFF;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	flex-shrink: 0;
+}
+.ldc-logo-mark--footer {
+	background: #FFFFFF;
+	color: #0A2540;
+}
+.ldc-logo-text {
+	font-family: 'Manrope', sans-serif;
+	font-weight: 700;
+	font-size: 19px;
+}
+.ldc-logo-text--footer {
+	color: #FFFFFF;
+}
+.ldc-nav-desktop ul {
+	display: flex;
+	gap: 28px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.ldc-nav-desktop a {
+	color: #1A1A1A;
+	text-decoration: none;
+	font-weight: 500;
+	font-size: 15px;
+}
+.ldc-nav-desktop a:hover {
+	color: #14467D;
+}
+.ldc-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+.ldc-login-link {
+	color: #1A1A1A;
+	text-decoration: none;
+	font-weight: 500;
+	font-size: 15px;
+}
+.ldc-cta-btn--sm {
+	padding: 10px 22px;
+	font-size: 14.5px;
+}
+@media (max-width: 1024px) {
+	.ldc-nav-desktop,
+	.ldc-login-link {
+		display: none;
+	}
+}
+@media (min-width: 768px) {
+	.pyxis-mobile-toggle { display: none; }
+}
+@media (max-width: 767px) {
+	.ldc-header-actions .ldc-cta-btn--sm { display: none; }
+}
+
+.ldc-footer {
+	background: #0A2540;
+	padding: 64px 48px 32px;
+}
+.ldc-footer-inner {
+	max-width: 1240px;
+	margin: 0 auto;
+}
+.ldc-footer-cols {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 32px;
+	justify-content: space-between;
+	margin-bottom: 32px;
+}
+.ldc-footer-brand {
+	width: 26%;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+.ldc-footer-social {
+	display: flex;
+	gap: 10px;
+}
+.ldc-footer-social a {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: rgba(255,255,255,0.08);
+	color: #C9D6E5;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	font-size: 13px;
+}
+.ldc-footer-col {
+	width: 16%;
+}
+.ldc-footer-col h4 {
+	color: #FFFFFF;
+	font-size: 16px;
+	margin: 0 0 12px;
+}
+.ldc-footer-col p,
+.ldc-footer-col ul {
+	margin: 6px 0;
+	padding: 0;
+	list-style: none;
+}
+.ldc-footer-col li {
+	margin: 6px 0;
+}
+.ldc-footer-col a {
+	color: #C9D6E5;
+	text-decoration: none;
+	font-size: 14.5px;
+}
+.ldc-footer-col a:hover {
+	color: #FFFFFF;
+}
+.ldc-footer-legal {
+	font-size: 13px;
+	color: #8FA3BD;
+	margin: 8px 0;
+}
+@media (max-width: 900px) {
+	.ldc-footer-brand,
+	.ldc-footer-col {
+		width: 45%;
+	}
+}
+
+/* Blog page content container */
+.ldc-blog-wrap {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 48px;
+}
+.ldc-blog-header {
+	margin-bottom: 32px;
+}
+.ldc-blog-category {
+	display: inline-block;
+	background: rgba(20,70,125,0.1);
+	color: #14467D;
+	font-size: 12.5px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	padding: 5px 12px;
+	border-radius: 999px;
+	margin-bottom: 16px;
+}
+.ldc-blog-header h1 {
+	font-size: 40px;
+	line-height: 1.2;
+	margin: 0 0 16px;
+}
+.ldc-blog-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	color: #5B6472;
+	font-size: 14.5px;
+}
+.ldc-blog-meta span:not(:last-child)::after {
+	content: "\00b7";
+	margin-left: 8px;
+}
+.ldc-blog-featured-image {
+	margin: 32px 0;
+	border-radius: 16px;
+	overflow: hidden;
+}
+.ldc-blog-featured-image img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+.ldc-blog-layout {
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: 48px;
+	align-items: start;
+}
+.ldc-blog-section-heading {
+	font-size: 26px;
+	margin: 56px 0 24px;
+}
+@media (max-width: 900px) {
+	.ldc-blog-layout {
+		grid-template-columns: 1fr;
+	}
+	.ldc-blog-wrap {
+		padding: 32px 20px;
+	}
+	.ldc-blog-header h1 {
+		font-size: 28px;
+	}
+}
+
+/* Blog archive listing */
+.ldc-archive-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 28px;
+}
+@media (max-width: 900px) {
+	.ldc-archive-grid { grid-template-columns: 1fr; }
+}
+
+/* Responsive: blog layout collapses to single column, TOC un-stickies, related grid stacks */
+@media (max-width: 900px) {
+	.ldc-related-grid {
+		grid-template-columns: 1fr;
+	}
+	.ldc-toc {
+		position: static;
+	}
+	.ldc-author-box {
+		flex-direction: column;
+	}
+	.ldc-sticky-cta-text {
+		display: none;
+	}
+}
