@@ -1,0 +1,65 @@
+SEO & Technical Notes - LenDenClub Homepage & Blog Redesign
+Laura Fernandez
+
+--------------------------------------------------
+
+What I changed and why
+
+The old site sends people to a separate app just to sign up, before they've even seen why they should trust the platform. So on the new homepage I put the lead form right in the hero section - name, mobile, email, and what they're interested in. No redirect needed.
+
+For the rest of the page I tried to keep it in an order that answers questions as they come up: what is this, is it trustworthy, how does it work, what can I actually do, why this platform, and then FAQs before the final CTA. Basically answering objections before asking for the click.
+
+For the blog, instead of designing one article page, I built a single template that any blog post can use (single.php). So the title, content, images and FAQs change per post, but the layout, TOC, related articles etc. don't need to be rebuilt every time.
+
+FAQs are their own thing in wp-admin (a custom post type) so they can be added/edited/deleted like normal posts, and grouped by which page they belong to (homepage or a specific article). Same FAQ data shows up in the accordion and in the schema, so they never go out of sync.
+
+
+SSR vs CSR
+
+SSR = server builds the whole page (HTML with real content) and sends it to the browser. Nothing needs to run before you see the content.
+CSR = server just sends an empty shell + JS, and the browser has to run the JS before any content shows up.
+
+WordPress is SSR by default - every page request goes through PHP and comes back as a finished HTML page.
+
+Why this matters for SEO: most crawlers (and stuff like WhatsApp/Twitter link previews) don't run JavaScript at all. If your content only exists after JS runs, a lot of them just see a blank page. Google can technically render JS but it's slower and not guaranteed.
+
+So for the homepage and blog - the SEO-critical pages - SSR is the right call, and that's what WordPress already gives us. I only used JavaScript for small interactive bits on top of the page that's already fully rendered - the FAQ accordion opening/closing, table of contents highlighting, a custom dropdown, sticky CTA bar. If JS is off, all the actual content (text, headings, FAQ answers) is still there, just without those extra interactions.
+
+
+Schema I used
+
+- Article schema on blog posts - gives Google the headline, author, dates, image for a proper rich result instead of a plain link.
+- BreadcrumbList - matches the visible breadcrumb (Home > Blog > Category > Article), so Google can show that trail in search results.
+- FAQPage - on the homepage and any blog post that actually has an FAQ section. Only added when the FAQ is really shown on the page, not hidden anywhere - Google can penalize you for schema that doesn't match what's visible.
+
+I added these directly in code (child theme functions.php) instead of using a plugin like Rank Math, mainly to avoid having two things try to output schema at once and conflict.
+
+Didn't add: Organization/WebSite schema (can add later once there's a real domain), and Review/Rating schema (didn't want to make up fake ratings just to get stars in search results).
+
+
+Other SEO stuff done
+
+- URLs like /blog/article-name/ instead of ?p=123
+- One H1 per page, proper H2/H3 below it
+- Meta description + canonical tag + Open Graph tags on every page
+- Alt text on images
+- Internal links between blog posts, and from footer/nav to relevant pages
+- Sitemap - WordPress already generates one, didn't need a plugin for that
+- Responsive down to small phone screens
+
+
+Conversion ideas
+
+1. Form on the homepage instead of app redirect (the main one)
+2. CTA buttons repeated in a few places - hero, after how-it-works, product cards, sticky bar, final section - not just once at the top
+3. Kept the form short - only fields actually needed
+4. Put trust stats (users, amount disbursed, returns) right near the form, not further down the page
+5. FAQ placed right before the final CTA to handle doubts before asking for the click
+
+
+Things I know are missing / would fix with more time
+
+- Blog images are placeholder graphics, not real photos - didn't want to grab random stock photos without a license
+- Don't have the real RBI registration number/CIN for the footer, left it as a placeholder rather than guess
+- A few footer links (Careers, Grievance Redressal etc.) go nowhere yet since those pages don't exist
+- Site is still running locally, not on a public host yet
